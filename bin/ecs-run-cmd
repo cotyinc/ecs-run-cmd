@@ -122,21 +122,7 @@ def run_task(**kwargs):
 
         return results.get('tasks')[0]
 
-    def get_network_configuration(cluster, task_definition):
-        service_arns = client.list_services(cluster=cluster)['serviceArns']
-        services = client.describe_services(
-            cluster=cluster, services=service_arns)['services']
-        matching_services = [
-            service for service in services if task_definition in service['taskDefinition']]
-
-        try:
-            network_configuration = matching_services[0]['networkConfiguration']
-            return network_configuration
-        except:
-            return None
-
     def get_override(container):
-
         if container.get('name') == kwargs['CMD_CONTAINER']:
             return dict(filter({
                 'name': container.get('name'),
@@ -170,7 +156,6 @@ def run_task(**kwargs):
         eprint('[ERROR] Specified command container not found in task definition')
         exit(-1)
 
-
     logOptions = None
     if kwargs['LOGS']:
         logConfig = commandContainer.get('logConfiguration')
@@ -184,18 +169,12 @@ def run_task(**kwargs):
         containers
     ))
 
-    network_configuration = get_network_configuration(cluster=kwargs['ECS_CLUSTER'], task_definition=kwargs['ECS_TASK_DEF'])
-    from pprint import pprint
-    pprint(overrides)
     result = client.run_task(
         cluster=kwargs['ECS_CLUSTER'],
         taskDefinition=kwargs['ECS_TASK_DEF'],
-        launchType='FARGATE',
         overrides={
             'containerOverrides': overrides
         },
-        networkConfiguration = network_configuration,
-        platformVersion="1.4.0",
         count=kwargs['TASK_COUNT'],
         startedBy=kwargs['TASK_STARTED_BY']
     )
