@@ -18,7 +18,7 @@ setup(
 		'argh',
 		'retrying',
 	],
-	scripts=['bin/ecs-run-cmd'],
+	scripts=['bin/ecs-run-cmd','bin/ecs-run-cmd-fargate'],
 	long_description=read('README.md'),
 	classifiers=[
 		"Development Status :: 3 - Alpha",
